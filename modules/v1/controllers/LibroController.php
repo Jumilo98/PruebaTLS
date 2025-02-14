@@ -4,6 +4,7 @@ namespace app\modules\v1\controllers;
 
 use app\components\AuthComponent;
 use app\models\Libro;
+use app\models\Autor;
 use yii\filters\Cors;
 use yii\filters\ContentNegotiator;
 use yii\rest\ActiveController;
@@ -57,8 +58,15 @@ class LibroController extends ActiveController
     {
         // Configurar la respuesta como JSON
         Yii::$app->response->format = Response::FORMAT_JSON;
-        // Obtener todos los libros
-        $libros = Libro::find()->asArray()->all();
+        // Obtener parámetros de paginación
+        $limit = Yii::$app->request->get('limit', 10); // Limite de registros
+        $page = Yii::$app->request->get('page', 1); // Página actual
+
+        // Calcular el skip basado en la página
+        $offset  = ($page - 1) * $limit;
+
+        // Obtener todos los libros con paginación
+        $libros = Libro::find()->offset($offset)->limit($limit)->asArray()->all();
         // Formatear la respuesta
         return $this->formatLibrosResponse($libros, 'Lista de libros');
     }
@@ -106,6 +114,11 @@ class LibroController extends ActiveController
     // Función auxiliar para crear un solo libro
     private function crearUnLibro($data)
     {
+        // Validar que los datos estén completos
+        if (empty($data['titulo']) || empty($data['autor_ids']) || empty($data['anio_publicacion'])) {
+            return ['error' => 'Faltan datos obligatorios: título, autores o año de publicación.'];
+        }
+
         $libro = new Libro();
         // Si se proporciona un _id válido, úsalo, de lo contrario MongoDB generará uno
         if (!empty($data['_id']) && preg_match('/^[0-9a-fA-F]{24}$/', $data['_id'])) {
@@ -122,6 +135,12 @@ class LibroController extends ActiveController
     // Función auxiliar para crear múltiples libros
     private function crearMultiplesLibros($librosData)
     {
+        // Validar los libros
+        foreach ($librosData as $data) {
+            if (empty($data['titulo']) || empty($data['autor_ids']) || empty($data['anio_publicacion'])) {
+                return ['error' => 'Faltan datos obligatorios en uno o más libros.'];
+            }
+        }
         // Inicializar arrays para guardar libros y errores
         $librosGuardados = [];
         $errores = [];
@@ -215,11 +234,20 @@ class LibroController extends ActiveController
     // Función auxiliar: Estructurar respuesta de un libro
     private function formatLibroResponse($libro, $message): array
     {
+        // Obtener los nombres de los autores
+        $autores = [];
+        // Recorrer los IDs de autores
+        if ($libro->autor_ids) {
+            foreach ($libro->autor_ids as $autorId) {
+                $autor = Autor::findOne(['_id' => $autorId]);
+                $autores[] = $autor ? $autor->nombre : 'Autor no encontrado';
+            }
+        }
         // Formatear la respuesta
         $libro = [
             '_id' => (string) $libro['_id'],
             'titulo' => $libro['titulo'],
-            'autor_ids' => array_map(fn($id) => (string) $id, $libro['autor_ids'] ?? []),
+            'autores' => $autores,
             'anio_publicacion' => $libro['anio_publicacion'],
             'descripcion' => $libro['descripcion'],
         ];

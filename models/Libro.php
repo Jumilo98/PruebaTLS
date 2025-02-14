@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\mongodb\ActiveRecord;
+use yii\web\BadRequestHttpException;
 use MongoDB\BSON\ObjectId;
 
 class Libro extends ActiveRecord
@@ -46,16 +47,17 @@ class Libro extends ActiveRecord
             foreach ($this->autor_ids as $autorId) {
                 // Buscar el autor por ID
                 $autor = Autor::findOne(['_id' => $autorId]);
-                // Si el autor existe
-                if ($autor) {
-                    // Obtener la lista de libros actuales del autor
-                    $librosExistentes = is_array($autor->libros_escritos) ? $autor->libros_escritos : [];
-                    // Evitar duplicados antes de agregar el nuevo libro
-                    if (!in_array((string)$this->_id, array_map('strval', $librosExistentes))) {
-                        $librosExistentes[] = new ObjectId($this->_id);
-                        $autor->updateAttributes(['libros_escritos' => $librosExistentes]);
-                    }
+                // Si el autor no existe, lanzar una excepción
+                if (!$autor) {
+                    throw new BadRequestHttpException("Uno de los autores no existe.");
                 }
+                // Obtener la lista de libros actuales del autor
+                $librosExistentes = is_array($autor->libros_escritos) ? $autor->libros_escritos : [];
+                // Evitar duplicados antes de agregar el nuevo libro
+                if (!in_array((string)$this->_id, array_map('strval', $librosExistentes))) {
+                    $librosExistentes[] = new ObjectId($this->_id);
+                    $autor->updateAttributes(['libros_escritos' => $librosExistentes]);
+                }            
             }
         }
 
