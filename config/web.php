@@ -98,4 +98,6 @@ if (YII_ENV_DEV) {
     ];
 }
 
+date_default_timezone_set('America/Guayaquil');  // Configura la zona horaria local
+
 return $config;

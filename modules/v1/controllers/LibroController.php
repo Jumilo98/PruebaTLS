@@ -2,14 +2,17 @@
 
 namespace app\modules\v1\controllers;
 
-use yii\rest\ActiveController;
 use app\models\Libro;
+use app\models\User;
+use yii\filters\Cors;
+use yii\filters\ContentNegotiator;
+use yii\rest\ActiveController;
 use yii\web\NotFoundHttpException;
 use yii\web\BadRequestHttpException;
-use yii\filters\Cors;
+use yii\web\UnauthorizedHttpException;
 use yii\web\Response;
-use yii\filters\ContentNegotiator;
 use MongoDB\BSON\ObjectId;
+use Exception;
 use Yii;
 
 class LibroController extends ActiveController
@@ -27,12 +30,38 @@ class LibroController extends ActiveController
                 'application/json' => Response::FORMAT_JSON,
             ],
         ];
-        // Habilitar CORS
+        // Habilitar CORS para aceptar encabezados Authorization
         $behaviors['corsFilter'] = [
             'class' => Cors::class,
         ];
 
         return $behaviors;
+    }
+    // Autenticar al usuario antes de ejecutar cualquier acción
+    public function beforeAction($action)
+    {
+        // Autenticar al usuario
+        $this->authenticateUser();
+        return parent::beforeAction($action);
+    }
+    // Función para autenticar al usuario
+    private function authenticateUser()
+    {
+        // Obtener el token de autenticación de la cabecera
+        $authHeader = Yii::$app->request->headers->get('Authorization');
+        Yii::info("Authorization header: " . $authHeader, __METHOD__);
+        // Lanzar una excepción si no se proporciona un token
+        if (!$authHeader || !preg_match('/^Bearer\s+(.*)$/', $authHeader, $matches)) {
+            throw new UnauthorizedHttpException("Token de autenticación requerido.");
+        }
+        // Validar el token
+        $token = $matches[1];
+        // Decodificar el token
+        $decodedToken = User::validateJwt($token);
+        // Lanzar una excepción si el token no es válido
+        if (!$decodedToken) {
+            throw new UnauthorizedHttpException("Token inválido o expirado.");
+        }
     }
 
     public function actions()
@@ -71,7 +100,7 @@ class LibroController extends ActiveController
             }
             // Formatear la respuesta
             return $this->formatLibroResponse($libro, 'Libro encontrado.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Lanzar una excepción si el ID no es válido
             throw new NotFoundHttpException($e->getMessage());
         }
@@ -160,7 +189,7 @@ class LibroController extends ActiveController
                 return ["message" => "Libro actualizado con éxito.", "libro" => $libro];
             }
             return ['error' => 'No se pudo actualizar el libro.'];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new NotFoundHttpException("ID inválido.");
         }
     }
@@ -184,7 +213,7 @@ class LibroController extends ActiveController
             }
 
             return ['error' => 'No se pudo eliminar el libro.'];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Lanzar una excepción si el ID no es válido
             throw new NotFoundHttpException("ID inválido.");
         }
