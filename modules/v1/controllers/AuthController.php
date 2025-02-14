@@ -35,9 +35,8 @@ class AuthController extends Controller
     public function actionLogin()
     {
         // Se obtienen los datos enviados por el cliente
-        $request = Yii::$app->request->post();
-        $username = $request['username'] ?? null;
-        $password = $request['password'] ?? null;
+        $username = Yii::$app->request->post('username');
+        $password = Yii::$app->request->post('password');
         // Se verifica que se hayan enviado los datos
         if (!$username || !$password) {
             throw new UnauthorizedHttpException("Nombre de usuario y contraseña son obligatorios.");
@@ -52,7 +51,8 @@ class AuthController extends Controller
         return [
             "message" => "Inicio de sesión exitoso.",
             "username" => $user->username,
-            "token" => $user->generateJwt()            
-        ];
+            "token" => $user->generateJwt(),
+            "expira" => date('Y-m-d H:i:s', time() + (30 * 60)) // Formato de fecha y hora
+        ];        
     }
 }

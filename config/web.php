@@ -44,7 +44,7 @@ $config = [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning', 'info'], // Agregar 'info' para depuración
+                    'levels' => ['error', 'warning'], // Agregar 'info' para depuración
                     'logVars' => ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION', '_SERVER'],
                 ],
             ],

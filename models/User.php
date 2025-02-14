@@ -6,6 +6,8 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use yii\base\Model;
 use yii\web\IdentityInterface;
+use yii\web\UnauthorizedHttpException;
+use Firebase\JWT\ExpiredException;
 use Exception;
 use Yii;
 
@@ -58,19 +60,22 @@ class User extends Model implements IdentityInterface
             $key = Yii::$app->params['jwtSecretKey'];
             // Decodifica el token
             return JWT::decode($token, new Key($key, 'HS256'));
+        } catch (ExpiredException $e) {
+            throw new UnauthorizedHttpException("Token expirado.");
         } catch (Exception $e) {
             return null;
         }
     }
     // Métodos requeridos por IdentityInterface - Obtiene la identidad del usuario
-    public static function findIdentity($id) 
-    { 
-        return null;     
+    public static function findIdentity($id)
+    {
+        return self::$users[$id] ?? null;
     }
     // Obtiene la identidad del usuario
-    public static function findIdentityByAccessToken($token, $type = null) 
-    { 
-        return null; 
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        $decoded = self::validateJwt($token);
+        return $decoded ? new static(self::$users[$decoded->username]) : null;
     }
     // Obtiene el ID del usuario
     public function getId() 
