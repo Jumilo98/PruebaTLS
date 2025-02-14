@@ -240,7 +240,7 @@ class LibroController extends ActiveController
         if ($libro->autor_ids) {
             foreach ($libro->autor_ids as $autorId) {
                 $autor = Autor::findOne(['_id' => $autorId]);
-                $autores[] = $autor ? $autor->nombre : 'Autor no encontrado';
+                $autores[] = $autor ? $autor->nombre_completo : 'Autor no encontrado';
             }
         }
         // Formatear la respuesta
