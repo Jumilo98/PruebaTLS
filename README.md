@@ -1,4 +1,4 @@
-# **Biblioteca API REST - Proyecto Yii2 con MongoDB y JWT (PRUEBATLS Jimmy Granizo)**
+# **Biblioteca API REST - Proyecto Yii2 con MongoDB y JWT (PruebaTLS Backend Jimmy Granizo)**
 
 Este proyecto es una API REST para gestionar una biblioteca virtual de libros y autores utilizando el framework Yii2 y la base de datos MongoDB. La API permite administrar libros, autores, y sus relaciones, y está protegida por autenticación mediante JWT.
 
@@ -6,7 +6,7 @@ Este proyecto es una API REST para gestionar una biblioteca virtual de libros y 
 
 La estructura del proyecto es la siguiente:
 
-      PRUEBATLS/ │ 
+      PRUEBATLSBACKEND/ │ 
       ├── assets/ # Archivos estáticos (CSS, JS, etc.) 
       ├── commands/ # Comandos personalizados de Yii2 
       ├── components/ # Componente reutilizable para Autenticar por JWT
@@ -50,8 +50,8 @@ Primero, clona el repositorio en tu máquina local. Abre una terminal y ejecuta 
 **Recuerda: Deberas clonar dentro de la carpeta C:\laragon\www\ de esta manera podras iniciar**
 
 ```bash
-git clone https://github.com/Jumilo98/PruebaTLS.git
-cd PruebaTLS
+git clone https://github.com/Jumilo98/PruebaTLSBackend.git
+cd PruebaTLSBackend
 ```
 ### **Paso 2: Instalar las Dependencias**
 
@@ -88,7 +88,7 @@ Si estás utilizando Laragon para el servidor, simplemente sigue estos pasos:
 1. Abre Laragon.
 2. Inicia los servicios Apache y MongoDB desde el panel de Laragon.
 3. Coloca el proyecto clonado en el directorio www de Laragon.
-4. Accede al proyecto desde tu navegador en: http://pruebatls.test:{puerto:80 u 8080}.
+4. Accede al proyecto desde tu navegador en: http://pruebatlsbackend.test:{puerto:80 u 8080}.
 
 ### **Paso 5: Verificar MongoDB**
 
@@ -161,7 +161,7 @@ De esta manera con el MongoDB Compass podras ingresar a tus BD locales
 
 ### **Paso 6: Ejecutar el Proyecto**
 
-Una vez configurado todo, puedes acceder a la API en http://pruebatls.test:{puerto:80 u 8080}. La API está protegida por JWT, por lo que necesitarás obtener un token para acceder a los endpoints de libros y autores.
+Una vez configurado todo, puedes acceder a la API en http://pruebatlsbackend.test:{puerto:80 u 8080}. La API está protegida por JWT, por lo que necesitarás obtener un token para acceder a los endpoints de libros y autores.
 
 **Recuerda: que al abrir Laragon, te dice que inicies los servicios**
 
