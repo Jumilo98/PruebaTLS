@@ -19,8 +19,8 @@ class User extends Model implements IdentityInterface
 
     private static $users = [
         "admin" => [
-            "username" => "admin",
-            "password" => "admin123"
+            "username" => "Jimmy",
+            "password" => "jimmy123"
         ]
     ];
      // Busca un usuario por su nombre de usuario.

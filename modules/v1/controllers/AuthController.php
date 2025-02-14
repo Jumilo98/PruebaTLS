@@ -51,7 +51,8 @@ class AuthController extends Controller
 
         return [
             "message" => "Inicio de sesión exitoso.",
-            "token" => $user->generateJwt()
+            "username" => $user->username,
+            "token" => $user->generateJwt()            
         ];
     }
 }
