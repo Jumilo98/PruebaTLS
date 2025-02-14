@@ -2,3 +2,6 @@ RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule . index.php [L]
+
+# Agregar esta línea para habilitar el encabezado Authorization
+SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0

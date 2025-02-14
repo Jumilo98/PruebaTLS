@@ -19,6 +19,10 @@ $config = [
                 'application/json' => 'yii\web\JsonParser', // Soporte JSON
             ],
         ],
+        'response' => [
+            'format' => yii\web\Response::FORMAT_JSON,
+            'charset' => 'UTF-8',
+        ],        
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -28,6 +32,7 @@ $config = [
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
+            'class' => 'yii\web\ErrorHandler',
         ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
@@ -71,8 +76,8 @@ $config = [
             'cors' => [
                 'Origin' => ['*'],
                 'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-                'Access-Control-Allow-Credentials' => true,
                 'Access-Control-Allow-Headers' => ['*'],
+                'Access-Control-Allow-Credentials' => true,
             ],
         ],
     ],
