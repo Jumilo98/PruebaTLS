@@ -47,6 +47,8 @@ Asegúrate de cumplir con los siguientes requisitos antes de comenzar:
 
 Primero, clona el repositorio en tu máquina local. Abre una terminal y ejecuta el siguiente comando:
 
+**Recuerda: Deberas clonar dentro de la carpeta C:\laragon\www\ de esta manera podras iniciar**
+
 ```bash
 git clone https://github.com/Jumilo98/PruebaTLS.git
 cd PruebaTLS
@@ -161,6 +163,7 @@ De esta manera con el MongoDB Compass podras ingresar a tus BD locales
 
 Una vez configurado todo, puedes acceder a la API en http://pruebatls.test:{puerto:80 u 8080}. La API está protegida por JWT, por lo que necesitarás obtener un token para acceder a los endpoints de libros y autores.
 
+**Recuerda: que al abrir Laragon, te dice que inicies los servicios**
 
 ### **Documentacion de la API REST**
 
