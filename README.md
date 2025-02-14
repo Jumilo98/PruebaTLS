@@ -1,9 +1,4 @@
-<p align="center">
-    <h1 align="center">PRUEBATLS JIMMY GRANIZO </h1>
-    <br>
-</p>
-
-# **Biblioteca API REST - Proyecto Yii2 con MongoDB**
+# **Biblioteca API REST - Proyecto Yii2 con MongoDB y JWT (PRUEBATLS Jimmy Granizo)**
 
 Este proyecto es una API REST para gestionar una biblioteca virtual de libros y autores utilizando el framework Yii2 y la base de datos MongoDB. La API permite administrar libros, autores, y sus relaciones, y está protegida por autenticación mediante JWT.
 
@@ -11,17 +6,17 @@ Este proyecto es una API REST para gestionar una biblioteca virtual de libros y 
 
 La estructura del proyecto es la siguiente:
 
-DIRECTORY STRUCTURE
--------------------
-
       PRUEBATLS/ │ 
       ├── assets/ # Archivos estáticos (CSS, JS, etc.) 
       ├── commands/ # Comandos personalizados de Yii2 
+      ├── components/ # Componente reutilizable para Autenticar por JWT
       ├── config/ # Archivos de configuración 
-      ├── controllers/ # Controladores de la API 
+      ├── controllers/ # Controladores de la API
       ├── mail/ # Plantillas de correo (si las hay) 
       ├── models/ # Modelos de la base de datos (MongoDB) 
       ├── modules/ # Módulos de la aplicación 
+        ├── v1/ # Version de Modulo para la API 
+            ├── controllers/ # Controladores de la API 
       ├── runtime/ # Archivos generados en tiempo de ejecución 
       ├── tests/ # Archivos de pruebas 
       ├── vendor/ # Dependencias instaladas por Composer 
@@ -37,10 +32,6 @@ DIRECTORY STRUCTURE
       ├── yii # Comando Yii2 
       └── .gitignore # Archivos ignorados por Git
 
-
-REQUIREMENTS
-------------
-
 ## **Requisitos del Proyecto**
 
 Asegúrate de cumplir con los siguientes requisitos antes de comenzar:
@@ -48,7 +39,7 @@ Asegúrate de cumplir con los siguientes requisitos antes de comenzar:
 - **PHP 8.2 o superior**.
 - **MongoDB** (con el driver de MongoDB para PHP).
 - **Composer** (para gestionar dependencias).
-- **Laravel/Apache/Nginx** como servidor web (en este caso, se usa Laragon).
+- **Apache/Nginx** como servidor web (en este caso, se usa Laragon).
 
 ## **Instalación del Proyecto**
 
@@ -58,138 +49,79 @@ Primero, clona el repositorio en tu máquina local. Abre una terminal y ejecuta 
 
 ```bash
 git clone https://github.com/Jumilo98/PruebaTLS.git
-cd proyecto
+cd PruebaTLS
+```
+### **Paso 2: Instalar las Dependencias**
 
+Instala las dependencias del proyecto usando Composer. Ejecuta el siguiente comando en la raíz del proyecto:
 
-INSTALLATION
-------------
+```bash
+composer install
+```
 
-### Install via Composer
+Esto descargará todas las dependencias necesarias definidas en el archivo composer.json.
 
+### **Paso 3: Configuración de MongoDB**
 
-CONFIGURATION
--------------
-
-### Database
-
-Edit the file `config/db.php` with real data, for example:
+Si es necesario, configura la conexión a MongoDB en el archivo config/db.php. Si utilizas MongoDB en Laragon, puede que debas actualizar la URI de conexión (por ejemplo, si la contraseña o el usuario es diferente):
 
 ```php
 return [
-    'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '1234',
-    'charset' => 'utf8',
+    'class' => 'yii\mongodb\Connection',
+    'dsn' => 'mongodb://localhost:27017/Biblioteca',
+    //'username' => 'root',
+    //'password' => '',
+    //'charset' => 'utf8',
+
+    // Schema cache options (for production environment)
+    //'enableSchemaCache' => true,
+    //'schemaCacheDuration' => 60,
+    //'schemaCache' => 'cache',
 ];
 ```
+### **Paso 4: Iniciar el Proyecto con Laragon**
 
-**NOTES:**
-- Yii won't create the database for you, this has to be done manually before you can access it.
-- Check and edit the other files in the `config/` directory to customize your application as required.
-- Refer to the README in the `tests` directory for information specific to basic application tests.
+Si estás utilizando Laragon para el servidor, simplemente sigue estos pasos:
 
+1. Abre Laragon.
+2. Inicia los servicios Apache y MongoDB desde el panel de Laragon.
+3. Coloca el proyecto clonado en el directorio www de Laragon.
+4. Accede al proyecto desde tu navegador en: http://pruebatls.test:{puerto:80 u 8080}.
 
-TESTING
--------
+### **Paso 5: Verificar MongoDB**
 
-Tests are located in `tests` directory. They are developed with [Codeception PHP Testing Framework](https://codeception.com/).
-By default, there are 3 test suites:
+Asegúrate de que MongoDB está ejecutándose correctamente. Puedes verificar esto abriendo MongoDB Compass o conectándote a MongoDB mediante la terminal:
 
-- `unit`
-- `functional`
-- `acceptance`
-
-Tests can be executed by running
-
-```
-vendor/bin/codecept run
+```bash
+mongo
+use biblioteca  # Cambia al nombre de tu base de datos
+show collections  # Verifica que las colecciones estén creadas
 ```
 
-The command above will execute unit and functional tests. Unit tests are testing the system components, while functional
-tests are for testing user interaction. Acceptance tests are disabled by default as they require additional setup since
-they perform testing in real browser. 
+### **Paso 5: Verificar MongoDB**
+
+Una vez configurado todo, puedes acceder a la API en http://pruebatls.test:{puerto:80 u 8080}. La API está protegida por JWT, por lo que necesitarás obtener un token para acceder a los endpoints de libros y autores.
 
 
-### Running  acceptance tests
+### **Documentacion de la API REST**
 
-To execute acceptance tests do the following:  
+Endpoints Disponibles
+-Libros:
+    GET /v1/libro: Obtiene una lista de todos los libros.
+    GET /v1/libro/{id}: Obtiene los detalles de un libro específico.
+    POST /v1/libro: Crea un nuevo libro.
+    PUT /v1/libro/{id}: Actualiza un libro existente.
+    DELETE /v1/libro/{id}: Elimina un libro.
 
-1. Rename `tests/acceptance.suite.yml.example` to `tests/acceptance.suite.yml` to enable suite configuration
+-Autores:
+    GET /v1/autor: Obtiene una lista de todos los autores.
+    GET /v1/autor/{id}: Obtiene los detalles de un autor específico.
+    POST /v1/autor: Crea un nuevo autor.
+    PUT /v1/autor/{id}: Actualiza un autor existente.
+    DELETE /v1/autor/{id}: Elimina un autor.
 
-2. Replace `codeception/base` package in `composer.json` with `codeception/codeception` to install full-featured
-   version of Codeception
-
-3. Update dependencies with Composer 
-
-    ```
-    composer update  
-    ```
-
-4. Download [Selenium Server](https://www.seleniumhq.org/download/) and launch it:
-
-    ```
-    java -jar ~/selenium-server-standalone-x.xx.x.jar
-    ```
-
-    In case of using Selenium Server 3.0 with Firefox browser since v48 or Google Chrome since v53 you must download [GeckoDriver](https://github.com/mozilla/geckodriver/releases) or [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) and launch Selenium with it:
-
-    ```
-    # for Firefox
-    java -jar -Dwebdriver.gecko.driver=~/geckodriver ~/selenium-server-standalone-3.xx.x.jar
-    
-    # for Google Chrome
-    java -jar -Dwebdriver.chrome.driver=~/chromedriver ~/selenium-server-standalone-3.xx.x.jar
-    ``` 
-    
-    As an alternative way you can use already configured Docker container with older versions of Selenium and Firefox:
-    
-    ```
-    docker run --net=host selenium/standalone-firefox:2.53.0
-    ```
-
-5. (Optional) Create `yii2basic_test` database and update it by applying migrations if you have them.
-
-   ```
-   tests/bin/yii migrate
-   ```
-
-   The database configuration can be found at `config/test_db.php`.
+-Autenticación:
+    POST /v1/auth/login: Inicia sesión y obtiene un token JWT.
 
 
-6. Start web server:
-
-    ```
-    tests/bin/yii serve
-    ```
-
-7. Now you can run all available tests
-
-   ```
-   # run all available tests
-   vendor/bin/codecept run
-
-   # run acceptance tests
-   vendor/bin/codecept run acceptance
-
-   # run only unit and functional tests
-   vendor/bin/codecept run unit,functional
-   ```
-
-### Code coverage support
-
-By default, code coverage is disabled in `codeception.yml` configuration file, you should uncomment needed rows to be able
-to collect code coverage. You can run your tests and collect coverage with the following command:
-
-```
-#collect coverage for all tests
-vendor/bin/codecept run --coverage --coverage-html --coverage-xml
-
-#collect coverage only for unit tests
-vendor/bin/codecept run unit --coverage --coverage-html --coverage-xml
-
-#collect coverage for unit and functional tests
-vendor/bin/codecept run functional,unit --coverage --coverage-html --coverage-xml
-```
-
-You can see code coverage output under the `tests/_output` directory.
+https://www.postman.com/lunar-crater-533910/pruebatls/collection/uvp4whw/pruebatls-api-biblioteca?action=share&creator=14423167&active-environment=14423167-79ba74b2-35a3-41c2-931d-b30d25f4663f
