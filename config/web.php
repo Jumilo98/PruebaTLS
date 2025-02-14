@@ -13,8 +13,11 @@ $config = [
     ],
     'components' => [
         'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => '-G_jGt_atLG-AcctLHgFu_7vju06W5ZW',
+            'cookieValidationKey' => '-G_jGt_atLG-AcctLHgFu_7vju06W5ZW', 
+            'enableCsrfValidation' => false, // Deshabilita CSRF para API REST
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser', // Soporte JSON
+            ],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -29,7 +32,6 @@ $config = [
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'viewPath' => '@app/mail',
-            // send all mails to a file by default.
             'useFileTransport' => true,
         ],
         'log' => [
@@ -37,37 +39,62 @@ $config = [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning', 'info'], // Agregar 'info' para depuración
+                    'logVars' => ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION', '_SERVER'],
                 ],
             ],
         ],
         'db' => $db,
-        /*
+        'mongodb' => [ // Configuración de MongoDB
+            'class' => '\yii\mongodb\Connection', // Clase de conexión
+            'dsn' => 'mongodb://localhost:27017/Biblioteca', // Conexión a la base de datos Biblioteca
+        ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'enableStrictParsing' => false, // Deshabilita el modo estricto
             'rules' => [
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['v1/autor', 'v1/libro'], // Controladores RESTful
+                    'pluralize' => false,
+                    'extraPatterns' => [ 
+                        'GET <id>' => 'view',
+                        'PUT <id>' => 'update',
+                        'DELETE <id>' => 'delete',
+                    ],
+                ],
             ],
         ],
-        */
+        'corsFilter' => [
+            'class' => \yii\filters\Cors::class,
+            'cors' => [
+                'Origin' => ['*'],
+                'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+                'Access-Control-Allow-Credentials' => true,
+                'Access-Control-Allow-Headers' => ['*'],
+            ],
+        ],
+    ],
+    'modules' => [
+        'v1' => [
+            'class' => 'app\modules\v1\Module',  // Ruta del módulo para API v1 
+        ],
     ],
     'params' => $params,
 ];
 
 if (YII_ENV_DEV) {
-    // configuration adjustments for 'dev' environment
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['127.0.0.1', '::1'],
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
-        // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['127.0.0.1', '::1'],
     ];
 }
 
